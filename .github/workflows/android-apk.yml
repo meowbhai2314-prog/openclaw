@@ -23,10 +23,16 @@ jobs:
         with:
           node-version: "26"
 
+      - name: Inspect package manager version
+        shell: bash
+        run: |
+          node -e "console.log(require('./package.json').packageManager || 'No packageManager field found')"
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 12.9.0
+
+      - name: Verify pnpm
+        run: pnpm --version
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -41,8 +47,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build third-party debug APK
+        working-directory: apps/android
         run: |
-          cd apps/android
           chmod +x gradlew
           ./gradlew --no-daemon :app:assembleThirdPartyDebug
 
